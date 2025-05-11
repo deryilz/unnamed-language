@@ -38,7 +38,6 @@ impl<'a> Lexer<'a> {
             '\n' => Token::new(K::LineBreak, start, start + 1),
             '@' => Token::new(K::At, start, start + 1),
             ',' => Token::new(K::Comma, start, start + 1),
-            '#' => Token::new(K::Hashtag, start, start + 1),
             '*' => Token::new(K::Times, start, start + 1),
             '(' => Token::new(K::ParenL, start, start + 1),
             ')' => Token::new(K::ParenR, start, start + 1),
@@ -50,6 +49,7 @@ impl<'a> Lexer<'a> {
             ' ' | '\r' | '\t' => self.from_whitespace(),
             '-' => self.from_dash(),
             '=' => self.from_equals(),
+            '+' => self.from_plus(),
             '/' => self.from_slash(),
             '\'' => self.from_single_quote(),
             '"' => self.from_quote(),
@@ -91,6 +91,16 @@ impl<'a> Lexer<'a> {
             Some('>') => Token::new(K::ThickArrow, start, self.index + 1),
             Some('=') => Token::new(K::DoubleEquals, start, self.index + 1),
             _ => Token::new(K::Equals, start, self.index),
+        }
+    }
+
+    fn from_plus(&mut self) -> Token {
+        let start = self.index;
+        self.next_char();
+
+        match self.peek_char() {
+            Some('+') => Token::new(K::DoublePlus, start, self.index + 1),
+            _ => Token::new(K::DoublePlus, start, self.index),
         }
     }
 
@@ -141,10 +151,7 @@ impl<'a> Lexer<'a> {
         }
 
         match self.peek_char() {
-            Some('\'') => {
-                self.next_char();
-                Token::new(K::Char, start, self.index)
-            }
+            Some('\'') => Token::new(K::Char, start, self.index + 1),
             _ => self.invalid(start),
         }
     }
@@ -162,8 +169,7 @@ impl<'a> Lexer<'a> {
             }
         }
 
-        self.next_char(); // consume ending quote
-        Token::new(K::String, start, self.index)
+        Token::new(K::String, start, self.index + 1)
     }
 
     fn from_colon(&mut self) -> Token {

@@ -21,7 +21,6 @@ pub enum TokenKind {
     CurlyL,
     CurlyR,
     At,
-    Hashtag,
     Plus,
     DoublePlus,
     Equals,
