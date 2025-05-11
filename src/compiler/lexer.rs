@@ -100,7 +100,7 @@ impl<'a> Lexer<'a> {
 
         match self.peek_char() {
             Some('+') => Token::new(K::DoublePlus, start, self.index + 1),
-            _ => Token::new(K::DoublePlus, start, self.index),
+            _ => Token::new(K::Plus, start, self.index),
         }
     }
 
